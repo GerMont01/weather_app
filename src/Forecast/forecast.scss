@@ -1,0 +1,25 @@
+.forecastContainer {
+    position: relative;
+    margin: auto;
+    color: white;
+    #table {
+        font-family: 'Ubuntu', sans-serif;
+        font-size: 12px;
+        text-align: center;
+        tr {
+            background-color:rgba(0, 0, 0, 0.212);
+            img {
+                vertical-align: middle;
+            }
+            td {
+                padding: 0 10px;
+                border-radius: 5px;
+            }
+        }
+    }
+    .close {
+        position: absolute;
+        top: 20px;
+        right: 0;
+    }
+}
