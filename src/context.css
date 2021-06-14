@@ -1,6 +1,13 @@
+#searchbar {
+  text-align: center;
+  margin: 30px;
+}
+#searchbar i {
+  position: relative;
+  left: 22px;
+  color: rgba(255, 255, 255, 0.6);
+}
 #addCity {
-  width: 40%;
-  margin: 20px;
   color: rgba(255, 255, 255, 0.6);
   text-align: right;
   padding: 5px 10px;
@@ -15,3 +22,4 @@
   #addCity:focus {
   background-color: rgba(255, 255, 255, 0.2);
 }
+

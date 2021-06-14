@@ -9,7 +9,7 @@ export default function Forecast() {
             
             {(value) => (
             <>
-            <div className='forecastContainer'>
+            <div key='forecast' className='forecastContainer'>
                 <h1>{value.forecast.name}, {value.forecast.country}</h1>
                 <table id="table">
                     <thead>
@@ -20,8 +20,8 @@ export default function Forecast() {
                             <tr>
                                 <td>{element.time}</td>
                                 <td>{element.temp}°C</td>
-                                <td><img src={element.iconurl} height='50px'/><span>{element.description}</span></td>
-                                <td><i class="fas fa-tint"></i><span>{element.humidity}%</span></td>
+                                <td><img src={element.iconurl} height='50px' alt='icon'/><span>{element.description}</span></td>
+                                <td><i className="fas fa-tint"></i><span>{element.humidity}%</span></td>
                             </tr>
                         )}
                     </tbody>

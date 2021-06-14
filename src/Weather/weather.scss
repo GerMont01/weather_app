@@ -1,6 +1,6 @@
 .city {
     position: relative;
-    margin: 3px;
+    margin: 6px;
     height: 155px;
     width: 155px;
     background-color: rgba(0, 0, 0, 0.212);
@@ -10,7 +10,7 @@
         margin: 10px 0 0 10px;
         color: rgba(255, 255, 255, 0.9);
         font-size: 20px;
-        width: 100%;
+        width: fit-content;
     }
     .weather {
         position: absolute;
@@ -63,13 +63,16 @@
             right: -25px;
         }
     }
-    .close {
-        position: absolute;
-        top: 7px;
-        right: 7px;
-        &:hover {
-            cursor: pointer;
-            transform: scale(1.05);
-        }
+}
+.close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 100;
+    height: fit-content;
+    width: fit-content;
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.05);
     }
 }

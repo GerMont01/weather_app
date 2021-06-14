@@ -1,5 +1,4 @@
 import React from "react";
-import { hydrate } from "react-dom";
 import uuid from "react-uuid";
 import './context.css';
 
@@ -33,7 +32,12 @@ export default class Provider extends React.Component {
             this.setState(newState);
         }
     };
-
+    getSunRise(epoch){
+        let d = new Date(epoch *1000);
+        let h = d.getUTCHours();
+        let m = d.getUTCMinutes();
+        return `${h}:${m}`
+    }
     convertDate(offset) {
         let current = new Date().getTime() / 1000
         let epoch = current + offset;
@@ -49,7 +53,6 @@ export default class Provider extends React.Component {
         let d = new Date(epoch *1000);
         let h = d.getUTCHours();
         let m = d.getUTCMinutes();
-        // let s = d.getUTCSeconds();
         return `${h}:${m}`
     }
   
@@ -72,16 +75,16 @@ export default class Provider extends React.Component {
                     humidity : city.main.humidity,
                     date : this.convertDate(city.timezone),
                     time : this.convertTime(city.timezone),
-                    sunrise : this.convertTime(city.sys.sunrise + city.timezone),
-                    sunset : this.convertTime(city.sys.sunset + city.timezone),
+                    sunrise : this.getSunRise(city.sys.sunrise + city.timezone),
+                    sunset : this.getSunRise(city.sys.sunset + city.timezone),
                     iconurl : `https://openweathermap.org/img/w/${city.weather[0].icon}.png`
                 }
                 if (cityData.name.length > 9){
                     cityData.name= cityData.name.substring(0, 9)
                 } 
-                this.state.units == 'metric' ? this.setState({unit: 'C'}) : this.setState({unit: 'F'})
+                this.state.units === 'metric' ? this.setState({unit: 'C'}) : this.setState({unit: 'F'})
                 let usedCities = this.state.cities;
-                if (!usedCities.some((city)=>city.name==cityData.name)) {
+                if (!usedCities.some((city)=>city.name===cityData.name)) {
                     usedCities.push(cityData);
                     this.setState(usedCities);
                 }
@@ -127,7 +130,10 @@ export default class Provider extends React.Component {
     render() {
         return (
             <Context.Provider value={this.state}>
-                <input onKeyDown={(e)=>{if(e.key === 'Enter'){this.fetchData(e.target.value)}}} type="text" id="addCity" placeholder="Add City"/>
+                <div id='searchbar'>
+                    <i className="fas fa-search"></i>
+                    <input onKeyDown={(e)=>{if(e.key === 'Enter'){this.fetchData(e.target.value); e.target.value=''}}} type="text" id="addCity" placeholder="Add City" autoComplete='off'/>
+                </div>
                 {this.props.children}
             </Context.Provider>
         )
