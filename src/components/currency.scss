@@ -1,0 +1,13 @@
+.currExchange {
+    padding: 5px;
+    color: white;
+    .enterValue {
+        margin: 5px;
+    }
+    .target_amount, .base_amount {
+        width: 70px;
+        border-radius: 5px;
+        border: transparent;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+}

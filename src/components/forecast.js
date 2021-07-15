@@ -26,7 +26,7 @@ export default function Forecast() {
                         )}
                     </tbody>
                 </table>
-                <img src={Close} className='close' alt='close' onClick={()=>value.handleForcastStatus()}/>
+                <img src={Close} className='close' alt='close' onClick={()=>value.dispatch({type:'TOGGLE_FORECAST'})}/>
             </div>
             </>
             )}

@@ -1,7 +1,9 @@
-import Weather from '../Weather/weather'
+import City from './city';
+import Currency from './currency';
 import './cities.scss';
 import { Consumer } from "../context";
-import Forecast from '../Forecast/forecast';
+import Forecast from './forecast';
+import Sightseeing from './sightseeing';
 
 export default function Cities() {
     return (
@@ -9,10 +11,13 @@ export default function Cities() {
         {(value) => (
             <>
             <div className='container'>
-              {value.showForecast ?
+              {value.showForecast ? (
                 <Forecast />
-                :
-                <Weather />}
+              ):value.showSightseeing ? (
+                <Sightseeing />
+              ):(
+                <City />
+              )}
             </div>
             </>
         )}

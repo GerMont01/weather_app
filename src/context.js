@@ -3,10 +3,49 @@ import uuid from "react-uuid";
 import './context.css';
 
 const Context = React.createContext();
+// Reducer --------------------------------------------------------------------
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'ADD_CITY':
+            if (!state.cities.some((city)=>city.name===action.payload.name)) {
+                state.cities.push(action.payload);
+            }
+            localStorage.setItem('cities',JSON.stringify(state.cities));
+            return {
+                ...state,
+            };
+        case 'DELETE':
+            state.cities = state.cities.filter((city)=>city.id!==action.payload)
+            localStorage.setItem('cities',JSON.stringify(state.cities));
+            return {
+                ...state
+            };
+          case 'TOGGLE_FORECAST':
+              return {
+                  ...state,
+                  showForecast: false
+              }
+          case 'CHANGE_BASE#':
+            for (let city of state.cities) {
+                if (city.id === action.payload.id) {
+                    city.base_amount = action.payload.amount;
+                }
+            }
+              return {
+                  ...state
+              }
+          default:
+              return {
+                  ...state
+              };
+        };
+}
 
+// Component -------------------------------------------------------------------------
 export default class Provider extends React.Component {
     state = {
-        cities: [],
+        
+        cities:[],
         unit:'C',
         units:'metric',
         forecast: {
@@ -14,24 +53,28 @@ export default class Provider extends React.Component {
             country: '',
             data: []
         },
+        sightseeing: [],
         showForecast: false,
-        handleDelete: (id) => {
-            let newCities = this.state;
-            newCities.cities = newCities.cities.filter((city)=>city.id!==id);
-            this.setState(newCities);
-        },
+        showSightseeing: false,
+        active: 'weather',
+        base: 'CAD',
         handleForcast: (name) => {
             this.forecastCity(name);
             let newState = this.state;
             newState.showForecast = true;
             this.setState(newState);
         },
-        handleForcastStatus: () => {
+        handleSightseeing: (name) => {
+            this.getSightseeing(name);
             let newState = this.state;
-            newState.showForecast = false;
+            newState.showSightseeing = true;
             this.setState(newState);
+        },
+        dispatch: (action) => {
+            this.setState((state) => reducer(state, action));
         }
     };
+    
     getSunRise(epoch){
         let d = new Date(epoch *1000);
         let h = d.getUTCHours();
@@ -57,7 +100,6 @@ export default class Provider extends React.Component {
     }
   
     fetchData(cityname) {
-        console.log(this.state)
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityname}&units=${this.state.units}&appid=bced9de0c38c91650f8270abf3db9fed`).then(response => {
             if(response.status !== 200) {
                 console.log(`We have some errors ${response.status}`);
@@ -77,17 +119,20 @@ export default class Provider extends React.Component {
                     time : this.convertTime(city.timezone),
                     sunrise : this.getSunRise(city.sys.sunrise + city.timezone),
                     sunset : this.getSunRise(city.sys.sunset + city.timezone),
-                    iconurl : `https://openweathermap.org/img/w/${city.weather[0].icon}.png`
+                    iconurl : `https://openweathermap.org/img/w/${city.weather[0].icon}.png`,
+                    base_amount:1,
+                    rate: 0,
+                    code: ''
                 }
                 if (cityData.name.length > 9){
                     cityData.name= cityData.name.substring(0, 9)
-                } 
-                this.state.units === 'metric' ? this.setState({unit: 'C'}) : this.setState({unit: 'F'})
-                let usedCities = this.state.cities;
-                if (!usedCities.some((city)=>city.name===cityData.name)) {
-                    usedCities.push(cityData);
-                    this.setState(usedCities);
                 }
+                this.state.units === 'metric' ? this.setState({unit: 'C'}) : this.setState({unit: 'F'}) 
+                this.getCurrency(city.sys.country).then(amount => {
+                    cityData.rate = amount.rate;
+                    cityData.code = amount.currency_code;
+                    this.state.dispatch({ type:'ADD_CITY', payload: cityData});
+                });
             }).catch(err => {
                 console.log(`We have some error ${err}`)
             })
@@ -119,14 +164,72 @@ export default class Provider extends React.Component {
                     }
                     forecast.data.push(x);
                 }
-                let newState = this.state;
-                newState.forecast = forecast;
-                this.setState(newState);
+                this.setState({forecast:forecast});
             }).catch(err => {
                 console.log(`We have some error ${err}`)
             })
         })
     }
+
+    async getCurrency(country) {
+        try {
+            const fetch_country = await fetch(`https://restcountries.eu/rest/v2/alpha/${country}`);
+            const json_country = await fetch_country.json();
+            const country_name = await json_country.name;
+            const fetch_currency = await fetch('https://pkgstore.datahub.io/JohnSnowLabs/iso-4217-currency-codes/iso-4217-currency-codes-csv_json/data/248f953387d4218576d846696fc54adf/iso-4217-currency-codes-csv_json.json')
+            const currency_json = await fetch_currency.json();
+            const country_data = currency_json.find(data => data.Entity.toLowerCase().includes(country_name.toLowerCase()) === true);
+            const currency_code = country_data.Alphabetic_Code;
+            const fetch_exchange = await fetch(`https://v6.exchangerate-api.com/v6/e383d57ae359f0928f0da2d2/pair/${this.state.base}/${currency_code}`);
+            const json_exchange = await fetch_exchange.json();
+            const rate = json_exchange.conversion_rate;
+            if (rate){
+                return {currency_code, rate};
+            } 
+        }
+        catch(error) {
+            console.log(error)
+        }
+    }
+
+    async getSightseeing(cityname) {
+        const api_key1 = '5ae2e3f221c38a28845f05b669931f2de602806c1d15cc8f826b0d32';
+        try {
+            const fetch_Coord = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=bced9de0c38c91650f8270abf3db9fed`);
+            const coord_json = await fetch_Coord.json();
+            const lon = coord_json.coord.lon;
+            const lat = coord_json.coord.lat;
+            const fetch_Sightseeing = await fetch(`https://api.opentripmap.com/0.1/en/places/radius?radius=2000&lon=${lon}&lat=${lat}&rate=3&limit=5&apikey=${api_key1}`);
+            const sightseeing_json = await fetch_Sightseeing.json();
+            const currentSights = this.state.sightseeing;
+            for (let i=0;i<5;i++) {
+                let id = sightseeing_json.features[i].properties.xid;
+                const fetch_sights = await fetch(`https://api.opentripmap.com/0.1/en/places/xid/${id}?apikey=${api_key1}`);
+                const sights_json = await fetch_sights.json();
+                if (sights_json.wikipedia_extracts) {
+                    const sights = {
+                        content: sights_json.wikipedia_extracts.html,
+                        sight: sights_json.name,
+                        image: sights_json.preview.source
+                    };
+                    currentSights.push(sights); 
+                }
+            } 
+            this.setState({
+                sightseeing: currentSights
+            }); 
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    componentDidMount() {
+        if (localStorage.getItem('cities')){
+            this.setState({cities:JSON.parse(localStorage.getItem('cities'))})
+        }
+    }
+
     render() {
         return (
             <Context.Provider value={this.state}>

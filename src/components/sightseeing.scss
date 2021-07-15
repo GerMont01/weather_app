@@ -1,0 +1,28 @@
+.sightcontainer{
+    background-color: rgba(0, 0, 0, 0.212);
+    border-radius: 10px;
+    position: absolute;
+    width: 85%;
+    top: 50px;
+    margin: auto;
+    color: white;
+    h2 {
+        width: 100%;
+        float:left;
+        font-size: 20px;
+        padding: 5px;
+    }
+    img {
+        float: left;
+        padding: 5px;
+    }
+    p {
+        margin: auto;
+        padding: 5px;
+        overflow-y: auto;
+        width: 55%;
+        height: 100px;
+        font-size: 13px;
+        float: right;
+    }
+}

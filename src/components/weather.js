@@ -1,17 +1,12 @@
 import React from "react";
 import { Consumer } from "../context";
-import './weather.scss'
-import Close from '../icons/close.svg'
 
-export default function Weather() {
+export default function Weather(props) {
+    const city = props.city;
     return(
         <Consumer>
             {(value) => (
             <>
-            {value.cities.map((city) => (
-            <>
-            <div className="city" key={city.id} id={city.id}>
-                <h1>{city.name}, {city.country}</h1> 
                 <div className="weather" onClick={()=>value.handleForcast(city.name)} key={city.id + 'weather'}>
                     <h2>{city.date} {city.time}</h2>
                     <div className="temp">
@@ -28,13 +23,8 @@ export default function Weather() {
                         <i className="fas fa-tint"></i><span> {city.humidity}%</span>
                     </div>
                 </div>
-                <img src={Close} className='close' alt='close' onClick={()=>value.handleDelete(city.id)}/>
-            </div>
-            </>
-            ))}
             </>
             )}
-            
         </Consumer>
     )
 }
