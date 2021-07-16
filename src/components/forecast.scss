@@ -1,6 +1,9 @@
 .forecastContainer {
     position: relative;
     margin: auto;
+    width: 95%;
+    height: 65vh;
+    overflow-y: auto;
     color: white;
     margin-bottom: 40px ;
     #table {

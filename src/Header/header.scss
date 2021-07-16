@@ -1,0 +1,22 @@
+.nav {
+    position: fixed;
+    bottom: 8vh;
+    background-color: rgba(0, 0, 0, 0.212);
+    display: flex;
+    justify-content: center;
+    padding: 2px 10px;
+    width: 80%;
+    height: 55px;
+    margin: auto;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.884);
+    p {
+        text-align: center;
+        width: fit-content;
+        margin: 10px;
+        padding: 5px 0;
+        &:hover {
+            border-bottom: 3px solid white;
+        }
+    }
+}

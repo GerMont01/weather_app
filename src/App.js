@@ -7,8 +7,8 @@ import Footer from './Footer/footer';
 function App() {
   return (
     <Provider>
-      <Header/>
       <Cities/>
+      <Header/>
       <Footer />
     </Provider>
   );

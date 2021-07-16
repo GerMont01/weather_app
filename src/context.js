@@ -1,8 +1,9 @@
 import React from "react";
 import uuid from "react-uuid";
 import './context.css';
+import Refresh from './icons/refresh.svg';
 
-const Context = React.createContext();
+export const Context = React.createContext();
 // Reducer --------------------------------------------------------------------
 const reducer = (state, action) => {
     switch (action.type) {
@@ -25,6 +26,11 @@ const reducer = (state, action) => {
                   ...state,
                   showForecast: false
               }
+          case 'TOGGLE_SIGHTSEEING':
+                return {
+                    ...state,
+                    showSightseeing: false
+                }
           case 'CHANGE_BASE#':
             for (let city of state.cities) {
                 if (city.id === action.payload.id) {
@@ -34,6 +40,16 @@ const reducer = (state, action) => {
               return {
                   ...state
               }
+          case 'ACTIVE_TAB':
+              return {
+                  ...state,
+                  active: action.payload
+              }
+          case 'EMPTY_S':
+            return {
+                ...state,
+                sightseeing: []
+            }
           default:
               return {
                   ...state
@@ -223,16 +239,16 @@ export default class Provider extends React.Component {
             console.log(error);
         }
     }
-
     componentDidMount() {
         if (localStorage.getItem('cities')){
-            this.setState({cities:JSON.parse(localStorage.getItem('cities'))})
+            JSON.parse(localStorage.getItem('cities')).map(city => this.fetchData(city.name))
         }
     }
 
     render() {
         return (
             <Context.Provider value={this.state}>
+                <img className='refresh' alt='' src={Refresh} onClick={()=>window.location.reload()}/>
                 <div id='searchbar'>
                     <i className="fas fa-search"></i>
                     <input onKeyDown={(e)=>{if(e.key === 'Enter'){this.fetchData(e.target.value); e.target.value=''}}} type="text" id="addCity" placeholder="Add City" autoComplete='off'/>

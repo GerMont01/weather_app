@@ -13,8 +13,8 @@ export default function City() {
                 {value.cities.map((city) => (
                 
                     <div className="city" key={city.id} id={city.id}>
-                        <h1 onClick={()=>value.handleSightseeing(city.name)}>{city.name}, {city.country}</h1>
-                        {value.active==='weather'? (
+                        <h1>{city.name}, {city.country}</h1>
+                        {value.active==='weather'||value.active==='sightseeing'? (
                             <Weather city={city} />
                         ):(
                             <Currency city={city} />
