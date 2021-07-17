@@ -1,25 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../context";
 
 export default function Weather(props) {
-    const city = props.city;
+    const [city, setCity] = useState(props.city);
+
     const data = useContext(Context);
-
-    const display = (name) => {
-        if (data.active==='weather'){
-            data.handleForcast(name)
-        }
-        if (data.active==='sightseeing') {
-            data.handleSightseeing(name)
-        }
-    }
-
     return(
 
-        <div className="weather" onClick={()=> display(city.name)} key={city.id + 'weather'}>
+        <div className="weather" onClick={()=> data.fetchForcastAndSightseeing(city.name)} key={city.id + 'weather'}>
             <h2>{city.date} {city.time}</h2>
             <div className="temp">
-                <span className="temp1">{city.temp}°{city.unit}</span><br /><span>{city.temp_min}°-{city.temp_max}°{city.unit}</span>
+            {(data.unit === 'C') ? (
+            <>
+                <span className="temp1">{city.temp}°{data.unit}</span><br /><span>{city.temp_min}°-{city.temp_max}°{data.unit}</span>
+            </>
+            ):(
+            <>
+                <span className="temp1">{Math.round((city.temp* 9/5) + 32)}°{data.unit}</span><br /><span>{Math.round((city.temp_min* 9/5) + 32)}°-{Math.round((city.temp_max* 9/5) + 32)}°{data.unit}</span>
+            </>
+            )}
             </div>
             <div className="desc">
                 <img src={city.iconurl} /><span>{city.description}</span>
@@ -32,6 +31,5 @@ export default function Weather(props) {
                 <i className="fas fa-tint"></i><span> {city.humidity}%</span>
             </div>
         </div>
-
     )
 }

@@ -6,3 +6,56 @@
     width: 100%;
     justify-content: center;
 }
+.closeFS {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+}
+
+#searchbar {
+    position: absolute;
+    text-align: center;
+    margin: 30px;
+    i {
+        position: relative;
+        left: 22px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+  }
+  #addCity {
+    color: rgba(255, 255, 255, 0.6);
+    text-align: right;
+    padding: 5px 10px;
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.212);
+    &::placeholder{
+        color: rgba(255, 255, 255, 0.6);
+    }
+    &:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+.refresh {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.05);
+    }
+}
+.changeInfo {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    padding: 5px;
+    color: white;
+    svg {
+        transform: scale(1.4);
+    } 
+}

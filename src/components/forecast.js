@@ -1,7 +1,6 @@
 import React from "react";
 import { Consumer } from "../context";
-import './forecast.scss'
-import Close from '../icons/close.svg'
+import './forecast.scss';
 
 export default function Forecast() {
     return(
@@ -26,7 +25,6 @@ export default function Forecast() {
                         )}
                     </tbody>
                 </table>
-                <img src={Close} className='close' alt='close' onClick={()=>value.dispatch({type:'TOGGLE_FORECAST'})}/>
             </div>
             </>
             )}

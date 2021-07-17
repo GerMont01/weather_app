@@ -1,7 +1,5 @@
 import React from "react";
 import uuid from "react-uuid";
-import './context.css';
-import Refresh from './icons/refresh.svg';
 
 export const Context = React.createContext();
 // Reducer --------------------------------------------------------------------
@@ -21,39 +19,49 @@ const reducer = (state, action) => {
             return {
                 ...state
             };
-          case 'TOGGLE_FORECAST':
-              return {
-                  ...state,
-                  showForecast: false
-              }
-          case 'TOGGLE_SIGHTSEEING':
-                return {
-                    ...state,
-                    showSightseeing: false
-                }
-          case 'CHANGE_BASE#':
+        case 'TOGGLE_FORECAST':
+            return {
+                ...state,
+                showForecast: action.payload
+            }
+        case 'TOGGLE_SIGHTSEEING':
+            return {
+                ...state,
+                showSightseeing: action.payload
+            }
+        case 'CHANGE_BASE#':
             for (let city of state.cities) {
                 if (city.id === action.payload.id) {
                     city.base_amount = action.payload.amount;
                 }
             }
-              return {
-                  ...state
-              }
-          case 'ACTIVE_TAB':
-              return {
-                  ...state,
-                  active: action.payload
-              }
-          case 'EMPTY_S':
+            return {
+                ...state
+            }
+        case 'ACTIVE_TAB':
+            return {
+                ...state,
+                active: action.payload
+            }
+        case 'EMPTY_S':
             return {
                 ...state,
                 sightseeing: []
             }
-          default:
-              return {
-                  ...state
-              };
+        case 'SET_BASE':
+            return {
+                ...state,
+                base: action.payload
+            }
+        case 'SET_UNIT':
+            return {
+                ...state,
+                unit: action.payload
+            }
+        default:
+            return {
+                ...state
+            };
         };
 }
 
@@ -62,7 +70,7 @@ export default class Provider extends React.Component {
     state = {
         
         cities:[],
-        unit:'C',
+        unit: 'C',
         units:'metric',
         forecast: {
             name: '',
@@ -74,18 +82,16 @@ export default class Provider extends React.Component {
         showSightseeing: false,
         active: 'weather',
         base: 'CAD',
-        handleForcast: (name) => {
+        fetchForcastAndSightseeing: (name) => {
             this.forecastCity(name);
+            this.getSightseeing(name);
             let newState = this.state;
             newState.showForecast = true;
             this.setState(newState);
         },
-        handleSightseeing: (name) => {
-            this.getSightseeing(name);
-            let newState = this.state;
-            newState.showSightseeing = true;
-            this.setState(newState);
-        },
+        handlefetchData: (cityname) => {
+            this.fetchData(cityname);
+        }, 
         dispatch: (action) => {
             this.setState((state) => reducer(state, action));
         }
@@ -143,7 +149,6 @@ export default class Provider extends React.Component {
                 if (cityData.name.length > 9){
                     cityData.name= cityData.name.substring(0, 9)
                 }
-                this.state.units === 'metric' ? this.setState({unit: 'C'}) : this.setState({unit: 'F'}) 
                 this.getCurrency(city.sys.country).then(amount => {
                     cityData.rate = amount.rate;
                     cityData.code = amount.currency_code;
@@ -244,15 +249,9 @@ export default class Provider extends React.Component {
             JSON.parse(localStorage.getItem('cities')).map(city => this.fetchData(city.name))
         }
     }
-
     render() {
         return (
             <Context.Provider value={this.state}>
-                <img className='refresh' alt='' src={Refresh} onClick={()=>window.location.reload()}/>
-                <div id='searchbar'>
-                    <i className="fas fa-search"></i>
-                    <input onKeyDown={(e)=>{if(e.key === 'Enter'){this.fetchData(e.target.value); e.target.value=''}}} type="text" id="addCity" placeholder="Add City" autoComplete='off'/>
-                </div>
                 {this.props.children}
             </Context.Provider>
         )
