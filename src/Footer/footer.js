@@ -6,7 +6,7 @@ export default function Footer() {
     return (
         <>
             <Settings />
-            <footer>My Pocket City ©</footer>
+            <footer>Gerardo Montero ©</footer>
         </>
     )
 }

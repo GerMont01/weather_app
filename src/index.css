@@ -5,7 +5,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url('./icons/background1.jpg');
   background-size: cover;
   height: 140vh;
   display: flex;

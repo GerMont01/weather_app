@@ -1,5 +1,6 @@
 import React from "react";
 import uuid from "react-uuid";
+import BgImage from "./icons/background1.jpg"
 
 export const Context = React.createContext();
 // Reducer --------------------------------------------------------------------
@@ -9,13 +10,13 @@ const reducer = (state, action) => {
             if (!state.cities.some((city)=>city.name===action.payload.name)) {
                 state.cities.push(action.payload);
             }
-            localStorage.setItem('cities',JSON.stringify(state.cities));
+            localStorage.setItem('data',JSON.stringify(state));
             return {
                 ...state,
             };
         case 'DELETE':
             state.cities = state.cities.filter((city)=>city.id!==action.payload)
-            localStorage.setItem('cities',JSON.stringify(state.cities));
+            localStorage.setItem('data',JSON.stringify(state));
             return {
                 ...state
             };
@@ -49,6 +50,7 @@ const reducer = (state, action) => {
                 sightseeing: []
             }
         case 'SET_BASE':
+            state.handleCurrency(action.payload);
             return {
                 ...state,
                 base: action.payload
@@ -57,6 +59,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 unit: action.payload
+            }
+        case 'TOGGLE_SETTINGS':
+            return {
+                ...state,
+                settings: action.payload
             }
         default:
             return {
@@ -68,7 +75,7 @@ const reducer = (state, action) => {
 // Component -------------------------------------------------------------------------
 export default class Provider extends React.Component {
     state = {
-        
+        settings: false,
         cities:[],
         unit: 'C',
         units:'metric',
@@ -92,6 +99,19 @@ export default class Provider extends React.Component {
         handlefetchData: (cityname) => {
             this.fetchData(cityname);
         }, 
+        handleCurrency: (base) => {
+            let newCities = this.state.cities;
+            for (let city of newCities) {
+                this.getCurrency(city.country, base).then(amount => {
+                    city.rate = amount.rate;
+                    this.setState({cities: newCities});
+                    localStorage.setItem('data',JSON.stringify(this.state));
+                }).catch(err => {
+                    alert('Enter a valid currency code')
+                    console.log(`We have some error ${err}`)
+                }) 
+            }  
+        },
         dispatch: (action) => {
             this.setState((state) => reducer(state, action));
         }
@@ -149,7 +169,7 @@ export default class Provider extends React.Component {
                 if (cityData.name.length > 9){
                     cityData.name= cityData.name.substring(0, 9)
                 }
-                this.getCurrency(city.sys.country).then(amount => {
+                this.getCurrency(city.sys.country, this.state.base).then(amount => {
                     cityData.rate = amount.rate;
                     cityData.code = amount.currency_code;
                     this.state.dispatch({ type:'ADD_CITY', payload: cityData});
@@ -180,7 +200,8 @@ export default class Provider extends React.Component {
                         description: cityforecast.list[i].weather[0].description.charAt(0).toUpperCase() + cityforecast.list[i].weather[0].description.slice(1),
                         temp: Math.round(cityforecast.list[i].main.temp),
                         humidity: cityforecast.list[i].main.humidity,
-                        time: cityforecast.list[i].dt_txt,
+                        time: cityforecast.list[i].dt,
+                        timezone: cityforecast.city.timezone,
                         iconurl: `https://openweathermap.org/img/w/${cityforecast.list[i].weather[0].icon}.png`
                     }
                     forecast.data.push(x);
@@ -192,7 +213,7 @@ export default class Provider extends React.Component {
         })
     }
 
-    async getCurrency(country) {
+    async getCurrency(country,base) {
         try {
             const fetch_country = await fetch(`https://restcountries.eu/rest/v2/alpha/${country}`);
             const json_country = await fetch_country.json();
@@ -201,7 +222,7 @@ export default class Provider extends React.Component {
             const currency_json = await fetch_currency.json();
             const country_data = currency_json.find(data => data.Entity.toLowerCase().includes(country_name.toLowerCase()) === true);
             const currency_code = country_data.Alphabetic_Code;
-            const fetch_exchange = await fetch(`https://v6.exchangerate-api.com/v6/e383d57ae359f0928f0da2d2/pair/${this.state.base}/${currency_code}`);
+            const fetch_exchange = await fetch(`https://v6.exchangerate-api.com/v6/e383d57ae359f0928f0da2d2/pair/${base}/${currency_code}`);
             const json_exchange = await fetch_exchange.json();
             const rate = json_exchange.conversion_rate;
             if (rate){
@@ -209,6 +230,7 @@ export default class Provider extends React.Component {
             } 
         }
         catch(error) {
+            alert('Enter a valid currency code')
             console.log(error)
         }
     }
@@ -245,10 +267,17 @@ export default class Provider extends React.Component {
         }
     }
     componentDidMount() {
-        if (localStorage.getItem('cities')){
-            JSON.parse(localStorage.getItem('cities')).map(city => this.fetchData(city.name))
+        if (localStorage.getItem('data')){
+            JSON.parse(localStorage.getItem('data')).cities.map(city => this.fetchData(city.name));
+            this.setState({ base: JSON.parse(localStorage.getItem('data')).base });
+        }
+        if (localStorage.getItem('background')) {
+            document.getElementById('body').style.backgroundImage = "url(" + localStorage.getItem('background') + ")";
+        } else {
+            document.getElementById('body').style.backgroundImage = `url(${BgImage})`;
         }
     }
+
     render() {
         return (
             <Context.Provider value={this.state}>
