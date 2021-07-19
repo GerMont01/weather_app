@@ -2,6 +2,7 @@
     background-color: rgba(0, 0, 0, 0.212);
     border-radius: 10px;
     position: relative;
+    max-width: 500px;
     width: 85%;
     top: 0;
     margin: auto;
@@ -19,7 +20,6 @@
     }
     img {
         float: left;
-        width: 50%;
         padding: 2.5%;
     }
     p {

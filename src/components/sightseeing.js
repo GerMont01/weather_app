@@ -13,6 +13,7 @@ export default function Sightseeing() {
                         <>
                         {value.sightseeing.map(sight => (
                             <>
+                                {console.log(sight)}
                                 <h2>{sight.sight}</h2>
                                 <img src={sight.image} alt={sight.sight} height='100px' width='150px'/>
                                 {parse(sight.content)}

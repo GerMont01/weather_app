@@ -194,7 +194,6 @@ export default class Provider extends React.Component {
                 if (forecast.name.length > 9){
                     forecast.name= forecast.name.substring(0, 9)
                 } 
-                //Loop to get data from every 3 hours and append each element to table 
                 for (let i=0;i<8;i++){
                     let x = {
                         description: cityforecast.list[i].weather[0].description.charAt(0).toUpperCase() + cityforecast.list[i].weather[0].description.slice(1),
