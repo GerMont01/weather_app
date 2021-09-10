@@ -143,10 +143,6 @@ export default class Provider extends React.Component {
   
     fetchData(cityname) {
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityname}&units=${this.state.units}&appid=bced9de0c38c91650f8270abf3db9fed`).then(response => {
-            if(response.status !== 200) {
-                console.log(`We have some errors ${response.status}`);
-                return;
-            }
             response.json().then(city => {
                 const cityData = {
                     id: uuid(),
@@ -181,10 +177,6 @@ export default class Provider extends React.Component {
     }
     forecastCity(cityname) {
         fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityname}&units=metric&cnt=8&appid=bced9de0c38c91650f8270abf3db9fed`).then(response => {
-            if(response.status !== 200) {
-                console.log(`We have some errors ${response.status}`);
-                return;
-            }
             response.json().then(cityforecast => {
                 const forecast = {
                     name : cityname.charAt(0).toUpperCase() + cityname.slice(1),
