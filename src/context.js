@@ -206,7 +206,7 @@ export default class Provider extends React.Component {
 
     async getCurrency(country,base) {
         try {
-            const fetch_country = await fetch(`https://restcountries.eu/rest/v2/alpha/${country}`);
+            const fetch_country = await fetch(`https://restcountries.com/v2/alpha/${country}`);
             const json_country = await fetch_country.json();
             const country_name = await json_country.name;
             const fetch_currency = await fetch('https://pkgstore.datahub.io/JohnSnowLabs/iso-4217-currency-codes/iso-4217-currency-codes-csv_json/data/248f953387d4218576d846696fc54adf/iso-4217-currency-codes-csv_json.json')
